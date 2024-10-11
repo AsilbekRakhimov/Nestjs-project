@@ -13,6 +13,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { LoggerMiddleware } from './middlewares';
 import { UploadFileModule } from './modules/file-upload';
+import { BookModule } from './modules/books/book.module';
+import { BooksModel } from './modules/books/models';
 
 @Module({
   imports: [
@@ -48,6 +50,7 @@ import { UploadFileModule } from './modules/file-upload';
             database: config.get<string>('database.dbName'),
             synchronize: true,
             autoLoadModels: true,
+            models: [BooksModel],
             logging: false,
           };
         } catch (error) {
@@ -57,7 +60,9 @@ import { UploadFileModule } from './modules/file-upload';
         }
       },
     }),
-    UploadFileModule
+    SequelizeModule.forFeature([BooksModel]),
+    UploadFileModule,
+    BookModule,
   ],
 })
 export class AppModule implements NestModule {
