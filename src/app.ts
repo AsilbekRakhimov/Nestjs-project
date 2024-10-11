@@ -15,6 +15,8 @@ import { LoggerMiddleware } from './middlewares';
 import { UploadFileModule } from './modules/file-upload';
 import { BookModule } from './modules/books/book.module';
 import { BooksModel } from './modules/books/models';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { BotModule } from './client';
 
 @Module({
   imports: [
@@ -35,6 +37,9 @@ import { BooksModel } from './modules/books/models';
     JwtModule.register({
       secret: 'my secret',
       global: true,
+    }),
+    TelegrafModule.forRoot({
+      token: process.env.TELEGRAM_BOT_TOKEN //|| "7567771218:AAEuA4lfPd6Cs6UBJOdoO0Ke_TUPFLKJ1ek",
     }),
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
@@ -60,7 +65,7 @@ import { BooksModel } from './modules/books/models';
         }
       },
     }),
-    SequelizeModule.forFeature([BooksModel]),
+    BotModule,
     UploadFileModule,
     BookModule,
   ],
