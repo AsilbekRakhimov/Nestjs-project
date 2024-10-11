@@ -17,6 +17,7 @@ import { BookModule } from './modules/books/book.module';
 import { BooksModel } from './modules/books/models';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { BotModule } from './client';
+import { UserModule, UsersModel } from './modules';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { BotModule } from './client';
       global: true,
     }),
     TelegrafModule.forRoot({
-      token: process.env.TELEGRAM_BOT_TOKEN //|| "7567771218:AAEuA4lfPd6Cs6UBJOdoO0Ke_TUPFLKJ1ek",
+      token: process.env.TELEGRAM_BOT_TOKEN, //|| "7567771218:AAEuA4lfPd6Cs6UBJOdoO0Ke_TUPFLKJ1ek",
     }),
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
@@ -55,7 +56,7 @@ import { BotModule } from './client';
             database: config.get<string>('database.dbName'),
             synchronize: true,
             autoLoadModels: true,
-            models: [BooksModel],
+            models: [BooksModel, UsersModel],
             logging: false,
           };
         } catch (error) {
@@ -68,6 +69,7 @@ import { BotModule } from './client';
     BotModule,
     UploadFileModule,
     BookModule,
+    UserModule,
   ],
 })
 export class AppModule implements NestModule {

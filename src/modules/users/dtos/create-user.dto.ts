@@ -43,14 +43,6 @@ export class CreateUserDto implements Omit<createUserInterface, 'image'> {
 
   @ApiProperty({
     type: String,
-    format: 'binary',
-    required: false,
-  })
-  @IsOptional()
-  image?: any;
-
-  @ApiProperty({
-    type: String,
     minLength: 4,
     required: false,
     example: '3443aaaa',

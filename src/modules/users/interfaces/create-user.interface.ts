@@ -3,5 +3,9 @@ export declare interface createUserInterface {
   age: number;
   email: string;
   password?: string;
-  image?: Express.Multer.File;
+}
+
+export declare interface createUserResponse {
+  message: string;
+  statusCode: number;
 }
