@@ -5,10 +5,15 @@ import * as path from 'path';
 import { Context } from 'telegraf';
 import { Message } from 'telegraf/typings/core/types/typegram';
 import * as opencage from 'opencage-api-client';
+import { InjectModel } from '@nestjs/sequelize';
+import { BooksModel } from 'src/modules';
 
 Injectable();
 @Update()
 export class BotService {
+  constructor(
+    @InjectModel(BooksModel) private booksService: typeof BooksModel,
+  ) {}
   @Action('start')
   @Start()
   async startBot(@Ctx() context: Context): Promise<void> {
@@ -24,11 +29,62 @@ export class BotService {
     <i>/help</i> - Botdagi komandalarni ko'rish
     <i>/books</i> - Kitoblar ro'yxatini ko'rish
     <i>/library_look</i> - Kutubxona ichki ko'rinishi
+    <i>/profile</i> - Profile qismi
     `);
+  }
+
+  @Command('books')
+  async showAllBooks(@Ctx() context: Context): Promise<any> {
+    const books = await this.booksService.findAll();
+    let i = 0;
+    let keyboardInnerArr = [];
+    let mainArr = [];
+    for (const book of books) {
+      keyboardInnerArr.push({
+        callback_data: book.dataValues.name,
+        text: book.dataValues.name,
+      });
+      i++;
+      if (i == 2) {
+        mainArr.push(keyboardInnerArr);
+        keyboardInnerArr = [];
+        i = 0;
+      }
+
+    }
+    const imagePath = path.join(
+      __dirname,
+      '../../../',
+      'public',
+      'images',
+      'books.jpeg',
+    );
+
+    await context.replyWithPhoto(
+      { source: createReadStream(imagePath) },
+      {
+        caption: 'Barcha kitoblar ro\'yxati!',
+        reply_markup: {
+          inline_keyboard: mainArr,
+        },
+      },
+    );
   }
 
   @Command('library_look')
   async sendRestaurantImage(@Ctx() context: Context): Promise<void> {
+    const imagePath = path.join(
+      __dirname,
+      '../../../',
+      'public',
+      'images',
+      'magic_library.jpeg',
+    );
+    await context.replyWithPhoto({ source: createReadStream(imagePath) });
+  }
+
+  @Command('profile')
+  async profileCommand(@Ctx() context: Context): Promise<void> {
     const imagePath = path.join(
       __dirname,
       '../../../',
@@ -49,24 +105,24 @@ export class BotService {
           ],
           resize_keyboard: true,
           one_time_keyboard: true,
-          //   inline_keyboard: [
-          //     [
-          //       {
-          //         callback_data: 'start',
-          //         text: 'Start Command',
-          //       },
-          //       {
-          //         callback_data: 'help',
-          //         text: 'Help Command',
-          //       },
-          //     ],
-          //     [
-          //       {
-          //         callback_data: 'Books',
-          //         text: 'Kitoblar',
-          //       },
-          //     ],
+          // inline_keyboard: [
+          //   [
+          //     {
+          //       callback_data: '',
+          //       text: 'Start Command',
+          //     },
+          //     {
+          //       callback_data: 'help',
+          //       text: 'Help Command',
+          //     },
           //   ],
+          //   [
+          //     {
+          //       callback_data: 'Books',
+          //       text: 'Kitoblar',
+          //     },
+          //   ],
+          // ],
         },
       },
     );

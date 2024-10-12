@@ -16,4 +16,12 @@ export class UsersService {
       role: 'user',
     });
   }
+
+  async deleteUser(id: number): Promise<void> {
+    await this.userModel.destroy({
+      where: {
+        id,
+      },
+    });
+  }
 }
